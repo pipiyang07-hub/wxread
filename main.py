@@ -45,6 +45,11 @@ def get_wr_skey():
     """刷新cookie密钥"""
     response = requests.post(RENEW_URL, headers=headers, cookies=cookies,
                              data=json.dumps(COOKIE_DATA, separators=(',', ':')))
+    # 👇 请加上这三行，用来抓包服务器的真实态度 👇
+    print(f"🔍 检查 Headers 包含 x-wrpa 吗: {'x-wrpa-0' in headers}")
+    print(f"📡 续期接口状态码: {response.status_code}")
+    print(f"📄 续期接口返回内容: {response.text}")
+    # 👆 到这里结束 👆
     for cookie in response.headers.get('Set-Cookie', '').split(';'):
         if "wr_skey" in cookie:
             return cookie.split('=')[-1][:8]
