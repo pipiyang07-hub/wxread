@@ -56,6 +56,7 @@ def fix_no_synckey():
 
 def refresh_cookie():
     logging.info(f"🍪 刷新cookie")
+    print(f"当前解析出的 Cookie 是: {cookies}")
     new_skey = get_wr_skey()
     if new_skey:
         cookies['wr_skey'] = new_skey
