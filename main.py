@@ -41,15 +41,38 @@ def cal_hash(input_string):
 
     return hex(_7032f5 + _cc1055)[2:].lower()
 
+# def get_wr_skey():
+#     """刷新cookie密钥"""
+#     response = requests.post(RENEW_URL, headers=headers, cookies=cookies,
+#                              data=json.dumps(COOKIE_DATA, separators=(',', ':')))
+#     # 👇 请加上这三行，用来抓包服务器的真实态度 👇
+#     print(f"🔍 检查 Headers 包含 x-wrpa 吗: {'x-wrpa-0' in headers}")
+#     print(f"📡 续期接口状态码: {response.status_code}")
+#     print(f"📄 续期接口返回内容: {response.text}")
+#     # 👆 到这里结束 👆
+#     for cookie in response.headers.get('Set-Cookie', '').split(';'):
+#         if "wr_skey" in cookie:
+#             return cookie.split('=')[-1][:8]
+#     return None
 def get_wr_skey():
     """刷新cookie密钥"""
-    response = requests.post(RENEW_URL, headers=headers, cookies=cookies,
+    # 1. 复制一份干净的 headers，专门用来续期
+    clean_headers = headers.copy()
+    
+    # 2. 剔除那些和“阅读接口”深度绑定的专属加密头
+    keys_to_remove = ['x-wrpa-0', 'x-wrpa', 'baggage', 'sentry-trace', 'Content-Length']
+    for k in keys_to_remove:
+        clean_headers.pop(k, None)
+        # 兼容部分脚本将 header 键名转为小写的情况
+        clean_headers.pop(k.lower(), None) 
+
+    # 3. 使用干净的头部发起续期请求
+    response = requests.post(RENEW_URL, headers=clean_headers, cookies=cookies,
                              data=json.dumps(COOKIE_DATA, separators=(',', ':')))
-    # 👇 请加上这三行，用来抓包服务器的真实态度 👇
-    print(f"🔍 检查 Headers 包含 x-wrpa 吗: {'x-wrpa-0' in headers}")
+    
     print(f"📡 续期接口状态码: {response.status_code}")
     print(f"📄 续期接口返回内容: {response.text}")
-    # 👆 到这里结束 👆
+    
     for cookie in response.headers.get('Set-Cookie', '').split(';'):
         if "wr_skey" in cookie:
             return cookie.split('=')[-1][:8]
