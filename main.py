@@ -96,7 +96,7 @@ def refresh_cookie():
         push(ERROR_CODE, PUSH_METHOD)
         raise Exception(ERROR_CODE)
 
-#refresh_cookie()
+refresh_cookie()
 index = 1
 lastTime = int(time.time()) - 30
 logging.info(f"⏱️ 一共需要阅读 {READ_NUM} 次...")
